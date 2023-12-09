@@ -42,4 +42,48 @@ Before running the application, ensure you have the following prerequisites inst
    ```bash
    git clone https://github.com/yourusername/lecturer-review-system.git
 
+2. Navigate to the project directory:
+
+   ```bash
+   cd lecturer-review-system
+
+3. Install dependencies:   
+   ```bash
+   pip install -r requirements.txt
+
+### Usage
+
+1. Run the application:
+   ```bash
+   python app.py
+
+2. Open your web browser and go to http://localhost:5000/.
+3. Navigate through the web interface to submit feedback and view lecturer ratings.
+
+### Contributing
+
+We welcome contributions from the community! If you'd like to contribute to the project, please follow these guidelines:
+
+Fork the repository
+Create your feature branch (git checkout -b feature/YourFeature)
+Commit your changes (git commit -m 'Add some feature')
+Push to the branch (git push origin feature/YourFeature)
+Create a new pull request
+
+### License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details.
+
+### Acknowledgments
+
+Thanks to the ALX and its Community for giving me the knowledge and motivation to work on this Project.
+
+
+   
+
+   
+
+
+
+
 
