@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css" />
+    <title>Lecturer Ratings</title>
+</head>
+<body>
+    <h1>Lecturer Ratings</h1>
+    <table border="1">
+        <tr>
+            <th>Lecturer</th>
+            <th>Average Rating</th>
+            <th>Number of Ratings</th>
+        </tr>
+        {% for lecturer, data in results.items() %}
+            <tr>
+                <td>{{ lecturer }}</td>
+                <td>{{ data['average_rating'] }}</td>
+                <td>{{ data['num_ratings'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
