@@ -9,17 +9,19 @@
 <body>
     <nav>
         <li><a href="{{ url_for('index') }}">Home</a></li>        
-      </nav>
+    </nav>
       
     <h1>Lecturer Ratings</h1>
     <table border="1">
         <tr>
+            <th>Rank</th>
             <th>Lecturer</th>
             <th>Average Rating</th>
             <th>Number of Ratings</th>
         </tr>
         {% for lecturer, data in results.items() %}
             <tr>
+                <td>{{ data['rank'] }}</td>
                 <td>{{ lecturer }}</td>
                 <td>{{ data['average_rating'] }}</td>
                 <td>{{ data['num_ratings'] }}</td>
@@ -28,3 +30,4 @@
     </table>
 </body>
 </html>
+
