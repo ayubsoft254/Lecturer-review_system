@@ -27,6 +27,26 @@ class Feedback(db.Model):
         self.rating = rating
         self.comments = comments
 
+def calculate_avg(data):
+    # Calculate the average rating and return it along with other data
+    total_ratings = data['num_ratings']
+    average_rating = data['average_rating'] if total_ratings > 0 else 0
+    return {
+        'average_rating': average_rating,
+        'num_ratings': total_ratings,
+        'rank': 0  # Placeholder for rank
+    }
+
+def sort_results(results):
+    # Sort the lecturers based on their average rating
+    sorted_results = sorted(results.items(), key=lambda x: x[1]['average_rating'], reverse=True)
+
+    # Calculate the rank of each lecturer
+    for i, (lecturer, details) in enumerate(sorted_results, start=1):
+        details['rank'] = i
+
+    return dict(sorted_results)
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -42,7 +62,9 @@ def results():
     # Create a dictionary to store the results
     results_dict = {row[0]: {'average_rating': row[1], 'num_ratings': row[2]} for row in results}
 
-    return render_template('results.html', results=results_dict)
+    sorted_results = sort_results(results_dict)
+
+    return render_template('results.html', results=sorted_results)
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -74,4 +96,5 @@ if __name__ == '__main__':
     with app.app_context():
         # Create the SQLite database file if not exists and initialize tables
         db.create_all()
-    app.run()
+    app.run(debug=True)
+
