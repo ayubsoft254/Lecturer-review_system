@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css" />
+    <title>Submit Feedback</title>
+</head>
+<body>
+    <nav>      
+        <li><a href="{{ url_for('results') }}">Results</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </nav>
+    <div class="container">
+        <img src="../static/logo.png" alt="TTU" class="logo" />
+        <h2>Submit Feedback</h2>
+        <form action="{{ url_for('submit') }}" method="POST">
+            <div class="form-group">
+                <label for="student">Student Name</label>
+                <input type="text" name="student" value="{{ current_user.student_name }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="student_id">Student ID</label>
+                <input type="text" name="student_id" value="{{ current_user.student_id }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="lecturer">Select Lecturer</label>
+                <select name="lecturer" required>
+                    <option value="" disabled selected>Select Lecturer</option>
+                    <option value="Tom Smith">Tom Smith</option>
+                    <option value="Karen Swanson">Karen Swanson</option>
+                    <option value="Jim Johnson">Jim Johnson</option>
+                    <option value="Shauna Gifford">Shauna Gifford</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="rating">Rate your Lecturer</label>
+                <input type="number" name="rating" min="1" max="10" placeholder="Enter a rating between 1 and 10" required>
+            </div>
+            <div class="form-group">
+                <label for="comments">Comments</label>
+                <textarea name="comments" placeholder="Tell us about your experience"></textarea>
+            </div>
+            <button type="submit" class="btn">Submit Feedback</button>
+        </form>
+    </div>
+</body>
+</html>

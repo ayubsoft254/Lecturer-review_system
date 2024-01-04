@@ -1,71 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="../static/style.css" />
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../static/style.css">
     <title>Lecturer Review System</title>
-  </head>
-  <body>
-    <nav>      
-      <li><a href="{{ url_for('results') }}">Results</a></li>
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
-    </nav>    
+</head>
+
+<body>
+    <nav>
+        <li><a href="{{ url_for('results') }}">Results</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </nav>
     <div class="container">
-      <img src="../static/logo.png" alt="TTU" class="logo" />
-      {% if message %}
-      <p class="message">{{ message | safe }}</p>
-      {% endif %}
-      <form action="/submit" method="POST">
-        <div class="form-group">
-          <h3>Student Name</h3>
-          <input
-            type="text"
-            name="student"
-            placeholder="Enter your name"
-          />
-        </div>
-        <div class="form-group">
-          <h3>Student ID</h3>
-          <input type="text" name="student_id" placeholder="Enter Your student ID" />
-      </div>
-      
-        <div class="form-group">
-          <h3>Lecturer</h3>
-          <select name="lecturer">
-            <option value="">Select Lecturer</option>
-            <option value="Tom Smith">Tom Smith</option>
-            <option value="Karen Swanson">Karen Swanson</option>
-            <option value="Jim Johnson">Jim Johnson</option>
-            <option value="Shauna Gifford">Shauna Gifford</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <h3>Please rate your Lecturer</h3>
-          <input type="radio" name="rating" value="1" /> 1
-          <input type="radio" name="rating" value="2" /> 2
-          <input type="radio" name="rating" value="3" /> 3
-          <input type="radio" name="rating" value="4" /> 4
-          <input type="radio" name="rating" value="5" /> 5
-          <input type="radio" name="rating" value="6" /> 6
-          <input type="radio" name="rating" value="7" /> 7
-          <input type="radio" name="rating" value="8" /> 8
-          <input type="radio" name="rating" value="9" /> 9
-          <input type="radio" name="rating" value="10" checked /> 10
-        </div>
-        <div class="form-group">
-          <h3>Comments about your experience</h3>
-          <textarea
-            name="comments"
-            id=""
-            cols="30"
-            rows="10"
-            placeholder="Tell us what you liked and/or did not like"
-          ></textarea>
-        </div>
-        <input type="submit" value="Submit" class="btn" />
-      </form>
+        <img src="../static/logo.png" alt="TTU" class="logo" />
+        {% if message %}
+        <p class="message">{{ message | safe }}</p>
+        {% endif %}
+        <h2>Welcome, {{ current_user.username }}!</h2>
+        <p>Submit your feedback about a lecturer:</p>
+        <a href="{{ url_for('submit') }}" class="btn">Submit Feedback</a>
     </div>
-  </body>
+</body>
+
 </html>
