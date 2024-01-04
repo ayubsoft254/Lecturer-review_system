@@ -3,13 +3,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
+from datetime import datetime
 import os
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://henry:Tfosbuya?1479@localhost:3306/fw_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://henry:Tfosbuya?1479@localhost:3306/feedback_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
@@ -19,8 +20,12 @@ login_manager.login_view = 'login'
 
 # User model for login
 class User(UserMixin, db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    student_name = db.Column(db.String(100), nullable=True)
+    student_id = db.Column(db.String(20), nullable=True)
     password_hash = db.Column(db.String(256), nullable=False)
 
     def set_password(self, password):
@@ -29,24 +34,29 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
-    def __init__(self, username, password=None):
+    def __init__(self, username, email, student_name=None, student_id=None, password=None):
         self.username = username
+        self.email = email
+        self.student_name = student_name
+        self.student_id = student_id
         if password:
             self.set_password(password)
-
 
 # Define the Feedback model
 class Feedback(db.Model):
     __tablename__ = 'feedback'
     id = db.Column(db.Integer, primary_key=True)
-    student = db.Column(db.String(200))
-    student_id = db.Column(db.String(200), unique=True)
-    lecturer = db.Column(db.String(200))
-    rating = db.Column(db.Integer)
-    comments = db.Column(db.Text())
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    student_name = db.Column(db.String(100), nullable=True)
+    lecturer = db.Column(db.String(100), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    comments = db.Column(db.Text, nullable=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, student, student_id, lecturer, rating, comments):
-        self.student = student
+    # Establish a relationship with the User model
+    user = db.relationship('User', backref=db.backref('feedback', lazy=True))
+
+    def __init__(self, student_id, lecturer, rating, comments):
         self.student_id = student_id
         self.lecturer = lecturer
         self.rating = rating
@@ -98,6 +108,9 @@ def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        email = request.form['email']
+        student_name = request.form['student_name']
+        student_id = request.form['student_id']
 
         # Check if the username is already taken
         existing_user = User.query.filter_by(username=username).first()
@@ -105,14 +118,19 @@ def signup():
             flash('Username already taken. Please choose another.', 'error')
         else:
             # Create a new user
-            new_user = User(username=username, password=password)
+            new_user = User(username=username, email=email, student_name=student_name, student_id=student_id, password=password)
             new_user.set_password(password)
             db.session.add(new_user)
             db.session.commit()
+
             flash('Signup successful! You can now login.', 'success')
             return redirect(url_for('login'))
 
     return render_template('signup.html')
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route('/logout')
 @login_required
@@ -141,32 +159,35 @@ def results():
 
     return render_template('results.html', results=sorted_results)
 
-@app.route('/submit', methods=['POST'])
+@app.route('/submit', methods=['GET', 'POST'])
+@login_required
 def submit():
     if request.method == 'POST':
-        student = request.form['student']
-        student_id = request.form['student_id']
+        student_id = current_user.id
         lecturer = request.form['lecturer']
-        rating = request.form['rating']
+        rating = int(request.form['rating'])
         comments = request.form['comments']
 
         # Validate the input data
-        if not student or not lecturer or not rating:
-            return render_template('index.html', message='Please enter required fields')
+        if not lecturer or not rating:
+            flash('Please enter required fields', 'error')
+            return redirect(url_for('submit'))
 
         # Check if the student has already submitted feedback for the lecturer
         existing_feedback = Feedback.query.filter_by(student_id=student_id, lecturer=lecturer).first()
         if existing_feedback:
-            return render_template('index.html', message='You have already submitted feedback for this lecturer')
+            flash('You have already submitted feedback for this lecturer', 'error')
+            return redirect(url_for('submit'))
 
         # Save the feedback to the database
-        feedback = Feedback(student=student, student_id=student_id, lecturer=lecturer, rating=rating, comments=comments)
+        feedback = Feedback(student_id=student_id, lecturer=lecturer, rating=rating, comments=comments)
         db.session.add(feedback)
         db.session.commit()
 
-        # Redirect the user to the success page
-        return render_template('success.html')
+        flash('Feedback submitted successfully!', 'success')
+        return redirect(url_for('results'))  # Redirect to the results page or a different page
 
+    return render_template('submit.html')
 
 if __name__ == '__main__':
     with app.app_context():
