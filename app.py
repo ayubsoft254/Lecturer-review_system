@@ -10,7 +10,7 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://henry:Tfosbuya?1479@localhost:3306/feedback_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://ayub:Tfosbuya?1479@localhost:3306/lecturer_review_system'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
